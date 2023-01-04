@@ -2,9 +2,9 @@
 
 int main(int argc, char **argv)
 {
-    Chip8 chip8;
+    emulator::Chip8 chip8;
     chip8.initialise();
-    chip8.loadGame("insert_filepath_to_rom_here");
+    chip8.loadGame("PONG");
     while (true)
     {
         chip8.emulateCycle();
