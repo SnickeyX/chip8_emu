@@ -157,7 +157,7 @@ namespace emulator
       pc += 2;
       break;
     case 0xD000: // DRW Vx, Vy, nibble
-      // only starting position are wrapped around screen - based on original implementation
+    {            // only starting position are wrapped around screen - based on original implementation
       std::uint8_t x_coord = V[x] % 64;
       std::uint8_t y_coord = V[y] % 32;
       V[0xF] = 0;
@@ -191,6 +191,7 @@ namespace emulator
       draw = true;
       pc += 2;
       break;
+    }
     case 0xE000:
       switch (opcode & 0X000F)
       {
@@ -241,7 +242,7 @@ namespace emulator
         pc += 2;
         break;
       case 0x0033: // LD B, Vx
-        // storing the BCD representation of the decimal value at Vx a in memory from [I:I+2]
+      {            // storing the BCD representation of the decimal value at Vx a in memory from [I:I+2]
         std::uint8_t deci = V[x];
         for (std::uint8_t i = 2; i >= 0; --i)
         {
@@ -250,8 +251,9 @@ namespace emulator
         }
         pc += 2;
         break;
+      }
       case 0x0055: // LD [I], Vx
-        // store values of registers Vo to Vx (inclusive) in memory starting at I, then update I
+      {            // store values of registers Vo to Vx (inclusive) in memory starting at I, then update I
         for (std::uint8_t i = 0; i <= x; ++i)
         {
           memory[I + i] = V[i];
@@ -259,8 +261,9 @@ namespace emulator
         I += x + 1;
         pc += 2;
         break;
+      }
       case 0x0065: // LD Vx, [I]
-        // fill registers Vo to Vx (inclusive) from memory starting at I, then update I
+      {            // fill registers Vo to Vx (inclusive) from memory starting at I, then update I
         for (std::uint8_t i = 0; i <= x; ++i)
         {
           V[i] = memory[I + i];
@@ -269,8 +272,11 @@ namespace emulator
         pc += 2;
         break;
       }
+      }
       break;
     }
+    // clear keyboard after each cycle
+    memset(keyboard, 0, sizeof(keyboard));
   }
 
   bool Chip8::drawFlag()
@@ -286,5 +292,59 @@ namespace emulator
 
   void Chip8::setKeys()
   {
+    int ch = _getch();
+    ch = tolower(ch);
+    switch (ch)
+    {
+    case '1':
+      keyboard[0x0] = 1;
+      break;
+    case '2':
+      keyboard[0x1] = 1;
+      break;
+    case '3':
+      keyboard[0x2] = 1;
+      break;
+    case '4':
+      keyboard[0x3] = 1;
+      break;
+    case 'q':
+      keyboard[0x4] = 1;
+      break;
+    case 'w':
+      keyboard[0x5] = 1;
+      break;
+    case 'e':
+      keyboard[0x6] = 1;
+      break;
+    case 'r':
+      keyboard[0x7] = 1;
+      break;
+    case 'a':
+      keyboard[0x8] = 1;
+      break;
+    case 's':
+      keyboard[0x9] = 1;
+      break;
+    case 'd':
+      keyboard[0xA] = 1;
+      break;
+    case 'f':
+      keyboard[0xB] = 1;
+      break;
+    case 'z':
+      keyboard[0xC] = 1;
+      break;
+    case 'x':
+      keyboard[0xD] = 1;
+      break;
+    case 'c':
+      keyboard[0xE] = 1;
+      break;
+    case 'v':
+      keyboard[0xF] = 1;
+      break;
+    }
   }
-}
+
+} // namespace emulator
