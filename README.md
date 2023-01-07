@@ -10,9 +10,11 @@ https://en.wikipedia.org/wiki/CHIP-8#CHIP-8_today
 Under development atm
 TODO:  
 - [x] basic outline
+- [ ] dealing with the different opcodes
 - [ ] ability to take in keyboard input
 - [ ] loading in game
-- [ ] dealing with the different opcodes
 - [ ] support for drawing on a gui
 - [ ] support for buzzer noise
+- [ ] error conditions to check for invalid programs/instructions
+- [ ] better build system
 - [ ] refactoring/optimizations
