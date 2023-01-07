@@ -206,6 +206,8 @@ namespace emulator
         pc += 2;
         break;
       case 0x0029: // LD F, Vx
+        // setting I to the location of the sprite for digit Vx
+        // sprites stored from 0-79 with each sprite taking 5 bytes
         I = V[x] * 5;
         pc += 2;
         break;
