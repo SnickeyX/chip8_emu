@@ -48,8 +48,11 @@ namespace emulator
     std::uint8_t keyboard[16]; // 16 keys
 
     // graphics
-    // 64x32 pixel monochrome display - treated like a 2D array of bits
-    std::uint8_t graphics[64 * 32];
+    // 32x64 (rows x cols) pixel monochrome display - treated like a 2D array of bits
+    std::uint8_t graphics[32 * 64];
+
+    // drawFlag
+    bool draw;
 
     // To be put anywhere in the first 512 bytes of memory, where the original interpreter was located
     // I'll go with the first 80 bytes from the bottom

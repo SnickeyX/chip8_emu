@@ -134,7 +134,7 @@ namespace emulator
         break;
       case 0x000E:            // SHL Vx, {, Vy}
         V[0XF] = (V[x] >> 7); // set VF to msb of Vx
-        V[x] <<= 2;           // multiply by 2
+        V[x] <<= 1;           // multiply by 2
         break;
       }
       pc += 2;
@@ -155,11 +155,38 @@ namespace emulator
       pc += 2;
       break;
     case 0xD000: // DRW Vx, Vy, nibble
-      for (size_t i = 0; i < n; ++i)
+      // only starting position are wrapped around screen - might be a version specific thing
+      std::uint8_t x_coord = V[x] % 64;
+      std::uint8_t y_coord = V[y] % 32;
+      V[0xF] = 0;
+      for (std::uint8_t i = 0; i < n; ++i)
       {
-        const std::uint8_t curr_bit_row = memory[i + I];
-        // TODO
+        // stop drawing if the bottom of the scrren is reached, sprite will clip
+        if (y_coord + i >= 32)
+        {
+          break;
+        }
+        std::uint8_t curr_bit_row = memory[i + I];
+        for (std::uint8_t j = 0; j < 8; ++j)
+        {
+          // if the considered bit is set, only then do xor else there is no difference
+          if (curr_bit_row & (0x80 >> j))
+          {
+            // stop drawing if right end of screen is reached, sprite will clip
+            if (x_coord + j >= 64)
+            {
+              break;
+            }
+            // if both bits are 1 then set VF since current bit on screen is erased
+            if (graphics[x_coord + j + ((y_coord + i) * 64)])
+            {
+              V[0XF] = 1;
+            }
+            graphics[x_coord + j + ((y_coord + i) * 64)] ^= 1;
+          }
+        }
       }
+      draw = true;
       pc += 2;
       break;
     case 0xE000:
@@ -246,6 +273,12 @@ namespace emulator
 
   bool Chip8::drawFlag()
   {
+    if (draw)
+    {
+      // reset draw flag
+      draw = false;
+      return true;
+    }
     return false;
   }
 
