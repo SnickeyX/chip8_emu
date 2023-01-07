@@ -173,9 +173,41 @@ namespace emulator
       }
       pc += 2;
       break;
-    case 0xE000: // SKP Vx
-      // if key corresponding to V[x] is down, skip next instr
-      pc += (keyboard[V[x]]) ? 4 : 2;
+    case 0xE000:
+      switch (opcode & 0X000F)
+      {
+      case 0X000E: // SKP Vx
+        // if key corresponding to V[x] is down, skip next instr
+        pc += (keyboard[V[x]]) ? 4 : 2;
+        break;
+      case 0X0001: // SKNP Vx
+        // if key corresponding to V[x] is up, skip next instr
+        pc += (!keyboard[V[x]]) ? 4 : 2;
+        break;
+      }
+      break;
+    case 0xF000:
+      switch (opcode & 0x00FF)
+      {
+      case 0X0007: // LD Vx, DT
+        break;
+      case 0x000A: // KD Vx, K
+        break;
+      case 0x0015: // LD DT, Vx
+        break;
+      case 0x0018: // LD ST, Vx
+        break;
+      case 0x001E: // ADD I, Vx
+        break;
+      case 0x0029: // LD F, Vx
+        break;
+      case 0x0033: // LD B, Vx
+        break;
+      case 0x0055: // LD [I], Vx
+        break;
+      case 0x0065: // LD Vx, [I]
+        break;
+      }
       break;
     }
   }
