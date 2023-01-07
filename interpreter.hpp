@@ -24,7 +24,7 @@ namespace emulator
 
     // registers
     std::uint8_t V[16]; // 16 8-bit general purpose registers
-    std::uint16_t I;    // I register to store memory addresses, only lower 12 bits are used
+    std::uint16_t I;    // I register to store memory addresses, only lower 12 bits are used [2^12==4k]
     // special registers
     std::uint16_t pc; // program counter
     std::uint8_t sp;  // stack pointer
@@ -44,7 +44,8 @@ namespace emulator
     std::uint8_t keyboard[16]; // 16 keys
 
     // graphics
-    std::uint8_t graphics[64 * 32]; // 64x32 pixel monochrome display
+    // 64x32 pixel monochrome display - treated like a 2D array of bits
+    std::uint8_t graphics[64 * 32];
 
     // To be put anywhere in the first 512 bytes of memory, where the original interpreter was located
     // I'll go with the first 80 bytes from the bottom

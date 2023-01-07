@@ -49,7 +49,13 @@ namespace emulator
   void Chip8::emulateCycle()
   {
     // opcode is 2 bytes long
-    const std::uint8_t opcode = memory[pc] << 8 | memory[pc + 1];
+    const std::uint16_t opcode = memory[pc] << 8 | memory[pc + 1];
+    // all possible relevant fields from instruction
+    const std::uint8_t x = (opcode & 0x0F00) >> 8;
+    const std::uint8_t y = (opcode & 0x00F0) >> 4;
+    const std::uint8_t n = opcode & 0x000F;
+    const std::uint8_t kk = opcode & 0x00FF;
+    const std::uint16_t nnn = opcode & 0x0FFF;
     // handle opcode
     switch (opcode & 0xF000)
     {
@@ -59,8 +65,8 @@ namespace emulator
       // CLS - clear the display
       case 0x0000:
         memset(graphics, 0, sizeof(graphics));
+        pc += 2;
         break;
-
       case 0x000E: // RET - return from subroutine
         pc = stack[sp];
         --sp;
@@ -76,42 +82,35 @@ namespace emulator
       pc = opcode & 0x0FFF;
       break;
     case 0x3000: // SE Vx,byte
-      const std::uint8_t x = (opcode & 0x0F00) >> 8;
-      const std::uint8_t kk = opcode & 0x00FF;
       if (V[x] == kk)
       {
-        pc += 2;
+        // skip next instr
+        pc += 4;
       }
       break;
     case 0x4000: // SNE Vx,byte
-      const std::uint8_t x = (opcode & 0x0F00) >> 8;
-      const std::uint8_t kk = opcode & 0x00FF;
       if (V[x] != kk)
       {
-        pc += 2;
+        // skip next instr
+        pc += 4;
       }
       break;
     case 0x5000: // SE Vx,Vy
-      const std::uint8_t x = (opcode & 0x0F00) >> 8;
-      const std::uint8_t y = (opcode & 0x00F0) >> 4;
       if (V[x] == V[y])
       {
-        pc += 2;
+        // skip next instr
+        pc += 4;
       }
       break;
     case 0x6000: // LD Vx,byte
-      const std::uint8_t x = (opcode & 0x0F00) >> 8;
-      const std::uint8_t kk = opcode & 0x00FF;
       V[x] = kk;
+      pc += 2;
       break;
     case 0x7000: // ADD Vx,byte
-      const std::uint8_t x = (opcode & 0x0F00) >> 8;
-      const std::uint8_t kk = opcode & 0x00FF;
       V[x] += kk;
+      pc += 2;
       break;
     case 0x8000:
-      const std::uint8_t x = (opcode & 0x0F00) >> 8;
-      const std::uint8_t y = (opcode & 0x00F0) >> 4;
       switch (opcode & 0x000F)
       {
       case 0x0000: // LD Vx,Vy
@@ -145,7 +144,39 @@ namespace emulator
       case 0x000E:           // SHL Vx, {, Vy}
         V[15] = (V[x] >> 7); // set VF to msb of Vx
         V[x] <<= 2;          // multiply by 2
+        break;
       }
+      pc += 2;
+      break;
+    case 0x9000: // SNE Vx, Vy
+      if (V[x] != V[y])
+      {
+        // skip next instr
+        pc += 4;
+      }
+      break;
+    case 0xA000: // LD I, addr
+      I = nnn;
+      pc += 2;
+      break;
+    case 0xB000: // JP V0, addr
+      pc = nnn + V[0];
+      break;
+    case 0xC000: // RND Vx, byte
+      V[x] = (rand() % 256) & kk;
+      pc += 2;
+      break;
+    case 0xD000: // DRW Vx, Vy, nibble
+      for (size_t i = 0; i < n; ++i)
+      {
+        const std::uint8_t curr_bit_row = memory[i + I];
+      }
+      pc += 2;
+      break;
+    case 0xE000: // SKP Vx
+      // if key corresponding to V[x] is down, skip next instr
+      pc += (keyboard[V[x]]) ? 4 : 2;
+      break;
     }
   }
 
