@@ -14,7 +14,7 @@ TODO:
 - [x] basic outline
 - [x] dealing with the different opcodes (original implementation)
 - [x] ability to take in keyboard input 
-- [ ] loading in game
+- [x] loading in game
 - [ ] support for drawing on a gui
 - [ ] support for buzzer noise
 - [ ] error conditions to check for invalid programs/instructions
