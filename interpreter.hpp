@@ -25,10 +25,12 @@ namespace emulator
     // registers
     std::uint8_t V[16]; // 16 8-bit general purpose registers
     std::uint16_t I;    // I register to store memory addresses, only lower 12 bits are used [2^12==4k]
+
     // special registers
     std::uint16_t pc; // program counter
     std::uint8_t sp;  // stack pointer
 
+    // timers
     // active when nonzero, in which case subtract 1 from delay_timer at 60Hz
     // when delay_timer reaches 0, it deactivates
     std::uint8_t delay_timer;
@@ -41,6 +43,8 @@ namespace emulator
     std::uint16_t stack[12]; // stack
 
     // keyboard
+    // only one key down during any given cycle
+    // 0-15 correspond to keys 0-F
     std::uint8_t keyboard[16]; // 16 keys
 
     // graphics

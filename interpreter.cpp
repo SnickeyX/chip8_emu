@@ -54,7 +54,7 @@ namespace emulator
     const std::uint8_t x = (opcode & 0x0F00) >> 8;
     const std::uint8_t y = (opcode & 0x00F0) >> 4;
     const std::uint8_t n = opcode & 0x000F;
-    const std::uint8_t kk = opcode & 0x00FF;
+    const std::uint8_t kk = opcode & 0x00FF; // also called nn
     const std::uint16_t nnn = opcode & 0x0FFF;
     // handle opcode
     switch (opcode & 0xF000)
@@ -82,25 +82,16 @@ namespace emulator
       pc = opcode & 0x0FFF;
       break;
     case 0x3000: // SE Vx,byte
-      if (V[x] == kk)
-      {
-        // skip next instr
-        pc += 4;
-      }
+      // skip next instr if Vx == kk
+      pc += (V[x] == kk) ? 4 : 2;
       break;
     case 0x4000: // SNE Vx,byte
-      if (V[x] != kk)
-      {
-        // skip next instr
-        pc += 4;
-      }
+      // skip next instr if Vx != kk
+      pc += (V[x] != kk) ? 4 : 2;
       break;
     case 0x5000: // SE Vx,Vy
-      if (V[x] == V[y])
-      {
-        // skip next instr
-        pc += 4;
-      }
+      // skip next instr if Vx == Vy;
+      pc += (V[x] == V[y]) ? 4 : 2;
       break;
     case 0x6000: // LD Vx,byte
       V[x] = kk;
@@ -126,34 +117,31 @@ namespace emulator
         V[x] ^= V[y];
         break;
       case 0x0004: // ADD Vx,Vy
-        V[15] = (V[y] > (0xFF - V[x])) ? 1 : 0;
+        V[0xF] = (V[y] > (0xFF - V[x])) ? 1 : 0;
         V[x] += V[y];
         break;
       case 0x0005: // SUB Vx,Vy
-        V[15] = (V[y] > V[x]) ? 0 : 1;
+        V[0XF] = (V[y] > V[x]) ? 0 : 1;
         V[x] -= V[y];
         break;
-      case 0x0006:          // SHR Vx,Vy
-        V[15] = V[x] & 0x1; // store least significant bit of V[x] in V[15]
-        V[x] >>= 1;         // diviing by 2
+      case 0x0006:           // SHR Vx,Vy
+        V[0XF] = V[x] & 0x1; // store least significant bit of V[x] in V[0XF]
+        V[x] >>= 1;          // diviing by 2
         break;
       case 0x0007: // SUBN Vx, Vy
-        V[15] = (V[x] > V[y]) ? 0 : 1;
+        V[0XF] = (V[x] > V[y]) ? 0 : 1;
         V[x] = V[y] - V[x];
         break;
-      case 0x000E:           // SHL Vx, {, Vy}
-        V[15] = (V[x] >> 7); // set VF to msb of Vx
-        V[x] <<= 2;          // multiply by 2
+      case 0x000E:            // SHL Vx, {, Vy}
+        V[0XF] = (V[x] >> 7); // set VF to msb of Vx
+        V[x] <<= 2;           // multiply by 2
         break;
       }
       pc += 2;
       break;
     case 0x9000: // SNE Vx, Vy
-      if (V[x] != V[y])
-      {
-        // skip next instr
-        pc += 4;
-      }
+      // skip next instr if Vx != Vy
+      pc += (V[x] != V[y]) ? 4 : 2;
       break;
     case 0xA000: // LD I, addr
       I = nnn;
@@ -170,6 +158,7 @@ namespace emulator
       for (size_t i = 0; i < n; ++i)
       {
         const std::uint8_t curr_bit_row = memory[i + I];
+        // TODO
       }
       pc += 2;
       break;
@@ -190,22 +179,63 @@ namespace emulator
       switch (opcode & 0x00FF)
       {
       case 0X0007: // LD Vx, DT
+        V[x] = delay_timer;
+        pc += 2;
         break;
       case 0x000A: // KD Vx, K
+        // find if any key pressed, only proceeed in execution if this is the case
+        for (std::int8_t i = 0; i < 16; ++i)
+        {
+          if (keyboard[i])
+          {
+            V[x] = i;
+            pc += 2;
+          }
+        }
         break;
       case 0x0015: // LD DT, Vx
+        delay_timer = V[x];
+        pc += 2;
         break;
       case 0x0018: // LD ST, Vx
+        sound_timer = V[x];
+        pc += 2;
         break;
       case 0x001E: // ADD I, Vx
+        I += V[x];
+        pc += 2;
         break;
       case 0x0029: // LD F, Vx
+        I = V[x] * 5;
+        pc += 2;
         break;
       case 0x0033: // LD B, Vx
+        // storing the BCD representation of the decimal value at Vx a in memory from [I:I+2]
+        std::uint8_t deci = V[x];
+        for (std::uint8_t i = 2; i >= 0; --i)
+        {
+          memory[I + i] = deci % 10;
+          deci /= 10;
+        }
+        pc += 2;
         break;
       case 0x0055: // LD [I], Vx
+        // store values of registers Vo to Vx (inclusive) in memory starting at I, then update I
+        for (std::uint8_t i = 0; i <= x; ++i)
+        {
+          memory[I + i] = V[i];
+        }
+        I += x + 1;
+        pc += 2;
         break;
       case 0x0065: // LD Vx, [I]
+        // fill registers Vo to Vx (inclusive) from memory starting at I, then update I
+        for (std::uint8_t i = 0; i <= x; ++i)
+        {
+          V[i] = memory[I + i];
+        }
+        I += x + 1;
+        pc += 2;
         break;
       }
       break;
