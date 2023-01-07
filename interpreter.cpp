@@ -125,6 +125,7 @@ namespace emulator
         V[x] -= V[y];
         break;
       case 0x0006:           // SHR Vx,Vy
+        V[x] = V[y];         // based on original implementation
         V[0XF] = V[x] & 0x1; // store least significant bit of V[x] in V[0XF]
         V[x] >>= 1;          // diviing by 2
         break;
@@ -133,6 +134,7 @@ namespace emulator
         V[x] = V[y] - V[x];
         break;
       case 0x000E:            // SHL Vx, {, Vy}
+        V[x] = V[y];          // based on original implementation
         V[0XF] = (V[x] >> 7); // set VF to msb of Vx
         V[x] <<= 1;           // multiply by 2
         break;
@@ -147,15 +149,15 @@ namespace emulator
       I = nnn;
       pc += 2;
       break;
-    case 0xB000: // JP V0, addr
-      pc = nnn + V[0];
+    case 0xB000:       // JP V0, addr
+      pc = nnn + V[0]; // based on original implementation
       break;
     case 0xC000: // RND Vx, byte
       V[x] = (rand() % 256) & kk;
       pc += 2;
       break;
     case 0xD000: // DRW Vx, Vy, nibble
-      // only starting position are wrapped around screen - might be a version specific thing
+      // only starting position are wrapped around screen - based on original implementation
       std::uint8_t x_coord = V[x] % 64;
       std::uint8_t y_coord = V[y] % 32;
       V[0xF] = 0;
