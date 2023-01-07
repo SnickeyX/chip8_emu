@@ -21,4 +21,4 @@ TODO:
 - [ ] better build system
 - [ ] ability to choose different games + separate emulator gui
 - [ ] support for chip-48 and schip
-- [ ] refactoring/optimizations
+- [ ] refactoring/optimizations (use of function pointers)
