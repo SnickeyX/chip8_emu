@@ -22,4 +22,4 @@ TODO:
 - [ ] ability to choose different games + separate emulator gui
 - [ ] support for chip-48 and schip
 - [ ] refactoring/optimizations (use of function pointers)
-- [ ] cross-platform support (windows only first)
+- [ ] cross-platform support (linux only first)

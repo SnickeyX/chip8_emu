@@ -4,10 +4,10 @@
 #include <fstream>
 #include <iostream>
 
-#ifdef _WIN32
-#include <conio.h>
+#if __linux__
+#include <curses.h>
 #else
-printf("OS not supported yet!");
+#pragma message("This program is not supported on your platform!")
 #endif
 
 namespace emulator
@@ -24,8 +24,6 @@ namespace emulator
     void emulateCycle();
     bool drawFlag();
     void setKeys();
-
-    std::uint8_t keyboard[16]; // 16 keys
 
   private:
     // memory model for chip8
@@ -54,6 +52,7 @@ namespace emulator
     // keyboard
     // only one key down during any given cycle
     // 0-15 correspond to keys 0-F
+    std::uint8_t keyboard[16]; // 16 keys
 
     // graphics
     // 32x64 (rows x cols) pixel monochrome display - treated like a 2D array of bits

@@ -39,10 +39,13 @@ namespace emulator
         memory[i + 512] = static_cast<std::uint8_t>(buffer[i]);
       }
       delete[] buffer;
+      std::cout << "Game loaded successfully!"
+                << "\n";
     }
     else
     {
-      std::cout << "Error: Could not open file" << std::endl;
+      std::cout << "Error: Could not open file"
+                << "\n";
     }
   }
 
@@ -161,7 +164,7 @@ namespace emulator
       std::uint8_t x_coord = V[x] % 64;
       std::uint8_t y_coord = V[y] % 32;
       V[0xF] = 0;
-      for (std::uint8_t i = 0; i < n; ++i)
+      for (size_t i = 0; i < n; ++i)
       {
         // stop drawing if the bottom of the scrren is reached, sprite will clip
         if (y_coord + i >= 32)
@@ -169,7 +172,7 @@ namespace emulator
           break;
         }
         std::uint8_t curr_bit_row = memory[i + I];
-        for (std::uint8_t j = 0; j < 8; ++j)
+        for (size_t j = 0; j < 8; ++j)
         {
           // if the considered bit is set, only then do xor else there is no difference
           if (curr_bit_row & (0x80 >> j))
@@ -214,7 +217,7 @@ namespace emulator
         break;
       case 0x000A: // KD Vx, K
         // find if any key pressed, only proceeed in execution if this is the case
-        for (std::int8_t i = 0; i < 16; ++i)
+        for (size_t i = 0; i < 16; ++i)
         {
           if (keyboard[i])
           {
@@ -244,7 +247,7 @@ namespace emulator
       case 0x0033: // LD B, Vx
       {            // storing the BCD representation of the decimal value at Vx a in memory from [I:I+2]
         std::uint8_t deci = V[x];
-        for (std::uint8_t i = 2; i >= 0; --i)
+        for (size_t i = 2; i >= 0; --i)
         {
           memory[I + i] = deci % 10;
           deci /= 10;
@@ -254,7 +257,7 @@ namespace emulator
       }
       case 0x0055: // LD [I], Vx
       {            // store values of registers Vo to Vx (inclusive) in memory starting at I, then update I
-        for (std::uint8_t i = 0; i <= x; ++i)
+        for (size_t i = 0; i <= x; ++i)
         {
           memory[I + i] = V[i];
         }
@@ -264,7 +267,7 @@ namespace emulator
       }
       case 0x0065: // LD Vx, [I]
       {            // fill registers Vo to Vx (inclusive) from memory starting at I, then update I
-        for (std::uint8_t i = 0; i <= x; ++i)
+        for (size_t i = 0; i <= x; ++i)
         {
           V[i] = memory[I + i];
         }
@@ -292,8 +295,11 @@ namespace emulator
 
   void Chip8::setKeys()
   {
-    int ch = _getch();
-    ch = tolower(ch);
+    initscr();
+    cbreak();
+    nodelay(stdscr, TRUE);
+    int ch = getch();
+    ch = tolower(static_cast<char>(ch));
     switch (ch)
     {
     case '1':
@@ -345,6 +351,7 @@ namespace emulator
       keyboard[0xF] = 1;
       break;
     }
+    endwin();
   }
 
 } // namespace emulator
