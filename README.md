@@ -13,7 +13,7 @@ Under development atm
 TODO:  
 - [x] basic outline
 - [x] dealing with the different opcodes (original implementation)
-- [ ] ability to take in keyboard input
+- [x] ability to take in keyboard input 
 - [ ] loading in game
 - [ ] support for drawing on a gui
 - [ ] support for buzzer noise
@@ -22,3 +22,4 @@ TODO:
 - [ ] ability to choose different games + separate emulator gui
 - [ ] support for chip-48 and schip
 - [ ] refactoring/optimizations (use of function pointers)
+- [ ] cross-platform support (windows only first)
