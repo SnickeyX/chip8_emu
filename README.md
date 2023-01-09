@@ -10,7 +10,7 @@ TODO:
 - [x] loading in game
 - [ ] support for drawing on a gui
 - [ ] support for buzzer noise
-- [ ] error conditions to check for invalid programs/instructions
+- [x] error conditions to check for invalid programs/instructions
 - [x] better build system
 - [ ] ability to choose different games + separate emulator gui
 - [ ] support for chip-48 and schip
