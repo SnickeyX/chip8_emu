@@ -2,6 +2,11 @@
 
 namespace emulator
 {
+  Chip8::Chip8()
+  {
+    initialise();
+  }
+
   void Chip8::initialise()
   {
     pc = 0x200; // program counter starts at 0x200
@@ -20,6 +25,10 @@ namespace emulator
 
     delay_timer = 0;
     sound_timer = 0;
+    num_clock_cycles = 0;
+
+    terminate = Flag::Lowered;
+    draw = Flag::Lowered;
   }
 
   // add exception handling
@@ -302,6 +311,25 @@ namespace emulator
     }
     // clear keyboard after each cycle
     memset(keyboard, 0, sizeof(keyboard));
+    updateTimers();
+  }
+
+  void Chip8::updateTimers()
+  {
+    if (num_clock_cycles == 60)
+    {
+      if (delay_timer > 0)
+      {
+        --delay_timer;
+      }
+      if (sound_timer > 0)
+      {
+        std::cout << "BEEP" << std::endl;
+        --sound_timer;
+      }
+      num_clock_cycles = 0;
+    }
+    ++num_clock_cycles;
   }
 
   Flag Chip8::shouldDraw()

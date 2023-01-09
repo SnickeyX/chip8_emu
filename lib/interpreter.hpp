@@ -22,15 +22,17 @@ namespace emulator
   class Chip8
   {
   public:
-    Chip8(){};
-    ~Chip8(){};
+    Chip8();
 
-    void initialise();
     bool loadGame(const char *filename);
     void emulateCycle();
     Flag shouldDraw();
     Flag shouldTerminate();
     void setKeys();
+
+  private:
+    void initialise();
+    void updateTimers();
 
   private:
     // memory model for chip8
@@ -52,6 +54,9 @@ namespace emulator
     // when sound_timer reaches 0, it deactivates
     // as long as value > 0, sound chip8 buzzer until it reaches 0
     std::uint8_t sound_timer;
+
+    // clock cycle counter mod 60 (programs should run at 60hz)
+    std::uint8_t num_clock_cycles;
 
     // stack
     std::uint16_t stack[12];
