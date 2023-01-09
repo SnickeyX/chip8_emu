@@ -1,0 +1,2 @@
+/usr/bin/ar qc libchip8_lib.a  CMakeFiles/chip8_lib.dir/interpreter.cpp.o
+/usr/bin/ranlib libchip8_lib.a
