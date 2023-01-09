@@ -23,7 +23,7 @@ namespace emulator
   }
 
   // add exception handling
-  void Chip8::loadGame(const char *filename)
+  bool Chip8::loadGame(const char *filename)
   {
     std::cout << filename << "\n";
     std::ifstream file(filename, std::ios::in | std::ios::binary);
@@ -42,13 +42,16 @@ namespace emulator
       delete[] buffer;
       std::cout << "Game loaded successfully!"
                 << "\n";
+      file.close();
+      return true;
     }
     else
     {
       std::cout << "Error: Could not open file"
                 << "\n";
+      file.close();
+      return false;
     }
-    file.close();
   }
 
   void Chip8::emulateCycle()

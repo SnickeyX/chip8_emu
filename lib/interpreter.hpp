@@ -20,7 +20,7 @@ namespace emulator
     ~Chip8(){};
 
     void initialise();
-    void loadGame(const char *filename);
+    bool loadGame(const char *filename);
     void emulateCycle();
     bool drawFlag();
     void setKeys();
