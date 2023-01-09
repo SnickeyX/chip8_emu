@@ -1,8 +1,0 @@
-/home/snickeyx/chip8_interpreter/build/CMakeFiles/rebuild_cache.dir
-/home/snickeyx/chip8_interpreter/build/CMakeFiles/edit_cache.dir
-/home/snickeyx/chip8_interpreter/build/lib/CMakeFiles/rebuild_cache.dir
-/home/snickeyx/chip8_interpreter/build/lib/CMakeFiles/edit_cache.dir
-/home/snickeyx/chip8_interpreter/build/lib/CMakeFiles/chip8_lib.dir
-/home/snickeyx/chip8_interpreter/build/src/CMakeFiles/rebuild_cache.dir
-/home/snickeyx/chip8_interpreter/build/src/CMakeFiles/edit_cache.dir
-/home/snickeyx/chip8_interpreter/build/src/CMakeFiles/chip8_emulator.dir

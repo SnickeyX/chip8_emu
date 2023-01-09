@@ -1,1 +1,0 @@
-/usr/bin/clang++   -Werror -Wpedantic   -rdynamic CMakeFiles/chip8_emulator.dir/main.cpp.o  -o ../bin/chip8_emulator  ../lib/libchip8_lib.a -lcurses -lform 
