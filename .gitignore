@@ -12,3 +12,4 @@ build
 games
 .vscode 
 .cache
+chip8_emulator

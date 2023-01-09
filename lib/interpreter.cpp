@@ -25,7 +25,8 @@ namespace emulator
   // add exception handling
   void Chip8::loadGame(const char *filename)
   {
-    std::ifstream file(filename, std::ios::binary);
+    std::cout << filename << "\n";
+    std::ifstream file(filename, std::ios::in | std::ios::binary);
     if (file.is_open())
     {
       file.seekg(0, std::ios::end);
@@ -47,12 +48,14 @@ namespace emulator
       std::cout << "Error: Could not open file"
                 << "\n";
     }
+    file.close();
   }
 
   void Chip8::emulateCycle()
   {
     // opcode is 2 bytes long
     const std::uint16_t opcode = memory[pc] << 8 | memory[pc + 1];
+    std::cout << std::hex << opcode << "\n";
     // all possible relevant fields from instruction
     const std::uint8_t x = (opcode & 0x0F00) >> 8;
     const std::uint8_t y = (opcode & 0x00F0) >> 4;
@@ -247,7 +250,7 @@ namespace emulator
       case 0x0033: // LD B, Vx
       {            // storing the BCD representation of the decimal value at Vx a in memory from [I:I+2]
         std::uint8_t deci = V[x];
-        for (size_t i = 2; i >= 0; --i)
+        for (std::size_t i = 3; i-- > 0;) // prevents underflow
         {
           memory[I + i] = deci % 10;
           deci /= 10;
