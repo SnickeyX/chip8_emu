@@ -21,15 +21,15 @@ int main(int argc, char **argv)
               << "\n";
     return 1;
   }
-  for (;;)
+  while (chip8.shouldTerminate() == emulator::Flag::Lowered)
   {
     chip8.emulateCycle();
-    if (chip8.drawFlag())
+    if (chip8.shouldDraw() == emulator::Flag::Raised)
     {
       // draw graphics
     }
     chip8.setKeys();
   }
-  std::cout << "Successfully competed program" << std::endl;
+  std::cout << "Successfully terminated program" << std::endl;
   return 0;
 }

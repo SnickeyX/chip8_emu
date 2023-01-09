@@ -12,6 +12,12 @@
 
 namespace emulator
 {
+  enum class Flag
+  {
+    Raised,
+    Lowered
+  };
+
   // an emulator class for chip8
   class Chip8
   {
@@ -22,7 +28,8 @@ namespace emulator
     void initialise();
     bool loadGame(const char *filename);
     void emulateCycle();
-    bool drawFlag();
+    Flag shouldDraw();
+    Flag shouldTerminate();
     void setKeys();
 
   private:
@@ -47,7 +54,7 @@ namespace emulator
     std::uint8_t sound_timer;
 
     // stack
-    std::uint16_t stack[12]; // stack
+    std::uint16_t stack[12];
 
     // keyboard
     // only one key down during any given cycle
@@ -58,8 +65,11 @@ namespace emulator
     // 32x64 (rows x cols) pixel monochrome display - treated like a 2D array of bits
     std::uint8_t graphics[32 * 64];
 
-    // drawFlag
-    bool draw;
+    // draw flag
+    Flag draw;
+
+    // terminate flag
+    Flag terminate;
 
     // To be put anywhere in the first 512 bytes of memory, where the original interpreter was located
     // I'll go with the first 80 bytes from the bottom

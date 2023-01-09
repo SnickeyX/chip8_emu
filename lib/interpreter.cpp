@@ -80,6 +80,9 @@ namespace emulator
         pc = stack[sp];
         --sp;
         break;
+      default: // Sys addr - call RCA 1802 program at nnn - we ignore this
+        pc += 2;
+        break;
       }
       break;
     case 0x1000: // JP addr - jump to location nnn
@@ -147,6 +150,9 @@ namespace emulator
         V[0XF] = (V[x] >> 7); // set VF to msb of Vx
         V[x] <<= 1;           // multiply by 2
         break;
+      default:
+        std::cout << "Unknown opcode: " << std::hex << opcode << std::endl;
+        terminate = Flag::Raised;
       }
       pc += 2;
       break;
@@ -197,7 +203,7 @@ namespace emulator
           }
         }
       }
-      draw = true;
+      draw = Flag::Raised;
       pc += 2;
       break;
     }
@@ -212,6 +218,9 @@ namespace emulator
         // if key corresponding to V[x] is up, skip next instr
         pc += (!keyboard[V[x]]) ? 4 : 2;
         break;
+      default:
+        std::cout << "Unknown opcode: " << std::hex << opcode << std::endl;
+        terminate = Flag::Raised;
       }
       break;
     case 0xF000:
@@ -281,29 +290,53 @@ namespace emulator
         pc += 2;
         break;
       }
+      default:
+        std::cout << "Unknown opcode: " << std::hex << opcode << std::endl;
+        terminate = Flag::Raised;
       }
+      break;
+    default:
+      std::cout << "Unknown opcode: " << std::hex << opcode << std::endl;
+      terminate = Flag::Raised;
       break;
     }
     // clear keyboard after each cycle
     memset(keyboard, 0, sizeof(keyboard));
   }
 
-  bool Chip8::drawFlag()
+  Flag Chip8::shouldDraw()
   {
-    if (draw)
+    if (draw == Flag::Raised)
     {
       // reset draw flag
-      draw = false;
-      return true;
+      draw = Flag::Lowered;
+      return Flag::Raised;
     }
-    return false;
+    return Flag::Lowered;
+  }
+
+  Flag Chip8::shouldTerminate()
+  {
+    return terminate;
   }
 
   void Chip8::setKeys()
   {
     initscr();
-    cbreak();
-    nodelay(stdscr, TRUE);
+    const auto set_cbreak_result = cbreak();
+    if (set_cbreak_result == ERR)
+    {
+      std::cout << "Error setting cbreak" << std::endl;
+      terminate = Flag::Raised;
+      return;
+    }
+    const auto set_delay_result = nodelay(stdscr, TRUE);
+    if (set_delay_result == ERR)
+    {
+      std::cout << "Error setting delay" << std::endl;
+      terminate = Flag::Raised;
+      return;
+    }
     int ch = getch();
     ch = tolower(static_cast<char>(ch));
     switch (ch)
@@ -357,7 +390,13 @@ namespace emulator
       keyboard[0xF] = 1;
       break;
     }
-    endwin();
+    const auto endwin_result = endwin();
+    if (endwin_result == ERR)
+    {
+      std::cout << "Error ending window" << std::endl;
+      terminate = Flag::Raised;
+      return;
+    }
   }
 
 } // namespace emulator
