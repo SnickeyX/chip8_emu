@@ -9,5 +9,6 @@
 *.pch
 
 build
+games
 .vscode 
 .cache
