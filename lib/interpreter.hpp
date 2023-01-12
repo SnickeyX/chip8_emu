@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstring>
 #include <fstream>
+#include <memory>
 #include <iostream>
 
 #if __linux__
@@ -12,6 +13,9 @@
 
 namespace emulator
 {
+  static constexpr int SCREEN_WIDTH = 64;
+  static constexpr int SCREEN_HEIGHT = 32;
+
   enum class Flag
   {
     Raised,
@@ -29,6 +33,10 @@ namespace emulator
     Flag shouldDraw();
     Flag shouldTerminate();
     void setKeys();
+
+    // graphics
+    // 32x64 (rows x cols) pixel monochrome display - treated like a 2D array of bits
+    std::uint8_t graphics[32 * 64];
 
   private:
     void initialise();
@@ -65,10 +73,6 @@ namespace emulator
     // only one key down during any given cycle
     // 0-15 correspond to keys 0-F
     std::uint8_t keyboard[16]; // 16 keys
-
-    // graphics
-    // 32x64 (rows x cols) pixel monochrome display - treated like a 2D array of bits
-    std::uint8_t graphics[32 * 64];
 
     // draw flag
     Flag draw;

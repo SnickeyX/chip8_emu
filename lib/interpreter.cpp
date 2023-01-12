@@ -212,6 +212,7 @@ namespace emulator
           }
         }
       }
+      printf("Im supposed to draw now!\n");
       draw = Flag::Raised;
       pc += 2;
       break;

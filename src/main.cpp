@@ -5,6 +5,36 @@
 #include <GLFW/glfw3.h>
 GLFWwindow *window;
 
+static constexpr int MODIFIER = 10;
+static constexpr int MODIFIED_WIDTH = emulator::SCREEN_WIDTH * MODIFIER;
+static constexpr int MODIFIED_HEIGHT = emulator::SCREEN_HEIGHT * MODIFIER;
+
+void DrawOnWindow(const emulator::Chip8 &C8)
+{
+  for (int col_num = 0; col_num < emulator::SCREEN_HEIGHT; ++col_num)
+  {
+    for (int row_num = 0; row_num < emulator::SCREEN_WIDTH; ++row_num)
+    {
+      // Setting RGB according to whether pixel is on or off
+      if (C8.graphics[(col_num * emulator::SCREEN_WIDTH) + row_num] == 0)
+      {
+        glColor3f(0.0f, 0.0f, 0.0f);
+      }
+      else
+      {
+        glColor3f(1.0f, 1.0f, 1.0f);
+      }
+
+      glBegin(GL_QUADS);
+      glVertex3f((row_num * MODIFIER), (col_num * MODIFIER), 0.0f);
+      glVertex3f((row_num * MODIFIER), (col_num * MODIFIER) + MODIFIER, 0.0f);
+      glVertex3f((row_num * MODIFIER) + MODIFIER, (col_num * MODIFIER) + MODIFIER, 0.0f);
+      glVertex3f((row_num * MODIFIER) + MODIFIER, (col_num * MODIFIER) + 0.0f, 0.0f);
+      glEnd();
+    }
+  }
+}
+
 int main(int argc, char **argv)
 {
   emulator::Chip8 chip8;
@@ -34,23 +64,6 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  glfwWindowHint(GLFW_SAMPLES, 4);               // 4x antialiasing
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  // Open a window and create its OpenGL context
-  window = glfwCreateWindow(64, 32, "CHIP Display", NULL, NULL);
-  if (window == NULL)
-  {
-    std::cout << "Failed to open GLFW window. Ensure you have the recommended libraries installed"
-              << "\n";
-    glfwTerminate();
-    return -1;
-  }
-  glfwMakeContextCurrent(window);
-
   // Initialize GLEW
   if (glewInit() != GLEW_OK)
   {
@@ -60,11 +73,29 @@ int main(int argc, char **argv)
     return -1;
   }
 
+  glfwWindowHint(GLFW_SAMPLES, 4);               // 4x antialiasing
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
+  glfwWindowHint(GLFW_FLOATING, GL_TRUE);
+
+  // Open a window and create its OpenGL context
+  window = glfwCreateWindow(MODIFIED_WIDTH, MODIFIED_HEIGHT, "CHIP Display", NULL, NULL);
+  if (window == NULL)
+  {
+    std::cout << "Failed to open GLFW window. Ensure you have the recommended libraries installed"
+              << "\n";
+    glfwTerminate();
+    return -1;
+  }
+  glfwMakeContextCurrent(window);
+
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-
-  // Black background
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluOrtho2D(0, MODIFIED_WIDTH, MODIFIED_HEIGHT, 0);
+  glMatrixMode(GL_MODELVIEW);
+  glViewport(0, 0, MODIFIED_WIDTH, MODIFIED_HEIGHT);
 
   std::chrono::system_clock::time_point time_point_start = std::chrono::system_clock::now();
   std::chrono::system_clock::time_point time_point_finish = std::chrono::system_clock::now();
@@ -85,9 +116,10 @@ int main(int argc, char **argv)
     if (chip8.shouldDraw() == emulator::Flag::Raised)
     {
       // Clear the screen. Could cause flickering otherwise.
-      glClear(GL_COLOR_BUFFER_BIT);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      // Draw graphics
+      // Draw
+      DrawOnWindow(chip8);
 
       glfwSwapBuffers(window);
       glfwPollEvents();
