@@ -110,7 +110,7 @@ namespace emulator::graphics
             [](GLFWwindow *window, int key, int scancode, int action, int mods)
             {
                 auto Chip8_ptr = reinterpret_cast<interpreter::Chip8 *>(glfwGetWindowUserPointer(window));
-                if (action == GLFW_PRESS)
+                if (action == GLFW_PRESS || action == GLFW_REPEAT)
                 {
                     switch (key)
                     {

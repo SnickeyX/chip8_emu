@@ -19,9 +19,10 @@ namespace emulator::interpreter
       memory[i] = chip8_fontset[i];
     }
 
-    // clear display and keyboard
+    // clear display, keyboard and stack
     memset(graphics_buffer, 0, sizeof(graphics_buffer));
     memset(keyboard, 0, sizeof(keyboard));
+    memset(stack, 0, sizeof(stack));
 
     delay_timer = 0;
     sound_timer = 0;
@@ -83,20 +84,21 @@ namespace emulator::interpreter
     const std::uint8_t n = opcode & 0x000F;
     const std::uint8_t kk = opcode & 0x00FF; // also called nn
     const std::uint16_t nnn = opcode & 0x0FFF;
+    printf("curent pc %d\n", pc);
     // handle opcode
     switch (opcode & 0xF000)
     {
     case 0x0000:
-      switch (opcode & 0x000F)
+      switch (opcode)
       {
       // CLS - clear the display
-      case 0x0000:
+      case 0x00E0:
         memset(graphics_buffer, 0, sizeof(graphics_buffer));
+        draw = Flag::Raised;
         pc += 2;
         break;
-      case 0x000E: // RET - return from subroutine
-        pc = stack[sp];
-        --sp;
+      case 0x00EE: // RET - return from subroutine
+        pc = stack[--sp];
         break;
       default: // Sys addr - call RCA 1802 program at nnn - we ignore this
         pc += 2;
@@ -104,12 +106,12 @@ namespace emulator::interpreter
       }
       break;
     case 0x1000: // JP addr - jump to location nnn
-      pc = opcode & 0x0FFF;
+      pc = nnn;
       break;
     case 0x2000: // CALL addr - call subroutine at nnn
-      ++sp;
       stack[sp] = pc;
-      pc = opcode & 0x0FFF;
+      ++sp;
+      pc = nnn;
       break;
     case 0x3000: // SE Vx,byte
       // skip next instr if Vx == kk
@@ -154,8 +156,8 @@ namespace emulator::interpreter
         V[0XF] = (V[y] > V[x]) ? 0 : 1;
         V[x] -= V[y];
         break;
-      case 0x0006:           // SHR Vx,Vy
-        V[x] = V[y];         // based on original implementation
+      case 0x0006: // SHR Vx,Vy
+        // V[x] = V[y];         // based on original implementation
         V[0XF] = V[x] & 0x1; // store least significant bit of V[x] in V[0XF]
         V[x] >>= 1;          // diviing by 2
         break;
@@ -163,8 +165,8 @@ namespace emulator::interpreter
         V[0XF] = (V[x] > V[y]) ? 0 : 1;
         V[x] = V[y] - V[x];
         break;
-      case 0x000E:            // SHL Vx, {, Vy}
-        V[x] = V[y];          // based on original implementation
+      case 0x000E: // SHL Vx, {, Vy}
+        // V[x] = V[y];          // based on original implementation
         V[0XF] = (V[x] >> 7); // set VF to msb of Vx
         V[x] <<= 1;           // multiply by 2
         break;
@@ -186,7 +188,7 @@ namespace emulator::interpreter
       pc = nnn + V[0]; // based on original implementation
       break;
     case 0xC000: // RND Vx, byte
-      V[x] = (rand() % 256) & kk;
+      V[x] = floor((rand() % 256) & kk);
       pc += 2;
       break;
     case 0xD000: // DRW Vx, Vy, nibble
@@ -226,15 +228,15 @@ namespace emulator::interpreter
       break;
     }
     case 0xE000:
-      switch (opcode & 0X000F)
+      switch (opcode & 0X00FF)
       {
-      case 0X000E: // SKP Vx
+      case 0X009E: // SKP Vx
         // if key corresponding to V[x] is down, skip next instr
-        pc += (keyboard[V[x]]) ? 4 : 2;
+        pc += (keyboard[V[x]] == 1) ? 4 : 2;
         break;
-      case 0X0001: // SKNP Vx
+      case 0X00A1: // SKNP Vx
         // if key corresponding to V[x] is up, skip next instr
-        pc += (!keyboard[V[x]]) ? 4 : 2;
+        pc += (keyboard[V[x]] == 0) ? 4 : 2;
         break;
       default:
         std::cout << "Unknown opcode: " << std::hex << opcode << std::endl;
@@ -294,7 +296,7 @@ namespace emulator::interpreter
         {
           memory[I + i] = V[i];
         }
-        I += x + 1;
+        // I += x + 1;
         pc += 2;
         break;
       }
@@ -304,7 +306,7 @@ namespace emulator::interpreter
         {
           V[i] = memory[I + i];
         }
-        I += x + 1;
+        // I += x + 1;
         pc += 2;
         break;
       }

@@ -67,11 +67,6 @@ int main(int argc, char **argv)
         return 1;
       }
     }
-    for (int i = 0; i < 16; ++i)
-    {
-      printf("%x ", chip8.keyboard[i]);
-    }
-    printf("\n");
   }
   std::cout << "Successfully terminated program" << std::endl;
   return 0;

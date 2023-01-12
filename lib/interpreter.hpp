@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <optional>
 #include <cstring>
+#include <cmath>
 #include <fstream>
 
 #if __linux__
@@ -28,11 +29,6 @@ namespace emulator::interpreter
     void setKey(const std::uint8_t key);
     std::optional<std::uint8_t> readGraphicsBuffer(const int x) const;
 
-    // keyboard
-    // only one key down during any given cycle
-    // 0-15 correspond to keys 0-F
-    std::uint8_t keyboard[16]; // 16 keys
-
   private:
     void initialise();
     void updateTimers();
@@ -49,20 +45,26 @@ namespace emulator::interpreter
     std::uint16_t pc; // program counter
     std::uint8_t sp;  // stack pointer
 
-    // timers
-    // active when nonzero, in which case subtract 1 from delay_timer at 60Hz
-    // when delay_timer reaches 0, it deactivates
-    std::uint8_t delay_timer;
     // active when nonzero, in which case subtract 1 from sound_timer at 60Hz
     // when sound_timer reaches 0, it deactivates
     // as long as value > 0, sound chip8 buzzer until it reaches 0
     std::uint8_t sound_timer;
 
+    // timers
+    // active when nonzero, in which case subtract 1 from delay_timer at 60Hz
+    // when delay_timer reaches 0, it deactivates
+    std::uint8_t delay_timer;
+
     // clock cycle counter mod 60 (programs should run at 60hz)
     std::uint8_t num_clock_cycles;
 
-    // stack
-    std::uint16_t stack[12];
+    // stack - 16 levels!
+    std::uint16_t stack[16];
+
+    // keyboard
+    // only one key down during any given cycle
+    // 0-15 correspond to keys 0-F
+    std::uint8_t keyboard[16]; // 16 keys
 
     // graphics
     // 32x64 (rows x cols) pixel monochrome display - treated like a 2D array of bits
