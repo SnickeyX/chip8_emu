@@ -24,7 +24,11 @@ namespace emulator::graphics
         std::optional<GLFWwindow *> getWindow();
         Result drawOnWindow(const interpreter::Chip8 &Chip8, GLFWwindow *window);
         bool windowDisrupted(GLFWwindow *window);
+        void setKeyReactFun(interpreter::Chip8 &Chip8, GLFWwindow *window);
         void clearWindow();
+
+    private:
+        void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
     };
 
 } // namespace graphics

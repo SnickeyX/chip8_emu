@@ -39,6 +39,7 @@ int main(int argc, char **argv)
               << "\n";
     return 1;
   }
+  graphics_handler.setKeyReactFun(chip8, window_op.value());
   std::chrono::system_clock::time_point time_point_start = std::chrono::system_clock::now();
   std::chrono::system_clock::time_point time_point_finish = std::chrono::system_clock::now();
   // Loop as long as we have not run of out instructions, user has not closed the window or the escape key has not been pressed
@@ -66,7 +67,11 @@ int main(int argc, char **argv)
         return 1;
       }
     }
-    chip8.setKeys();
+    for (int i = 0; i < 16; ++i)
+    {
+      printf("%x ", chip8.keyboard[i]);
+    }
+    printf("\n");
   }
   std::cout << "Successfully terminated program" << std::endl;
   return 0;

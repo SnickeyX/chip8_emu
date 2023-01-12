@@ -98,6 +98,77 @@ namespace emulator::graphics
         return (glfwWindowShouldClose(window) == 0 || glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS) ? false : true;
     }
 
+    void Graphics::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+    {
+    }
+
+    void Graphics::setKeyReactFun(interpreter::Chip8 &Chip8, GLFWwindow *window)
+    {
+        glfwSetWindowUserPointer(window, &Chip8);
+        glfwSetKeyCallback(
+            window,
+            [](GLFWwindow *window, int key, int scancode, int action, int mods)
+            {
+                auto Chip8_ptr = reinterpret_cast<interpreter::Chip8 *>(glfwGetWindowUserPointer(window));
+                if (action == GLFW_PRESS)
+                {
+                    switch (key)
+                    {
+                    case GLFW_KEY_1:
+                        Chip8_ptr->setKey(0x0);
+                        break;
+                    case GLFW_KEY_2:
+                        Chip8_ptr->setKey(0x1);
+                        break;
+                    case GLFW_KEY_3:
+                        Chip8_ptr->setKey(0x2);
+                        break;
+                    case GLFW_KEY_4:
+                        Chip8_ptr->setKey(0x3);
+                        break;
+                    case GLFW_KEY_Q:
+                        Chip8_ptr->setKey(0x4);
+                        break;
+                    case GLFW_KEY_W:
+                        Chip8_ptr->setKey(0x5);
+                        break;
+                    case GLFW_KEY_E:
+                        Chip8_ptr->setKey(0x6);
+                        break;
+                    case GLFW_KEY_R:
+                        Chip8_ptr->setKey(0x7);
+                        break;
+                    case GLFW_KEY_A:
+                        Chip8_ptr->setKey(0x8);
+                        break;
+                    case GLFW_KEY_S:
+                        Chip8_ptr->setKey(0x9);
+                        break;
+                    case GLFW_KEY_D:
+                        Chip8_ptr->setKey(0xA);
+                        break;
+                    case GLFW_KEY_F:
+                        Chip8_ptr->setKey(0xB);
+                        break;
+                    case GLFW_KEY_Z:
+                        Chip8_ptr->setKey(0xC);
+                        break;
+                    case GLFW_KEY_X:
+                        Chip8_ptr->setKey(0xD);
+                        break;
+                    case GLFW_KEY_C:
+                        Chip8_ptr->setKey(0xE);
+                        break;
+                    case GLFW_KEY_V:
+                        Chip8_ptr->setKey(0xF);
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            });
+    }
+
     void Graphics::clearWindow()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

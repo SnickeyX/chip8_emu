@@ -221,7 +221,6 @@ namespace emulator::interpreter
           }
         }
       }
-      printf("Im supposed to draw now!\n");
       draw = Flag::Raised;
       pc += 2;
       break;
@@ -358,83 +357,9 @@ namespace emulator::interpreter
     return terminate;
   }
 
-  void Chip8::setKeys()
+  void Chip8::setKey(const std::uint8_t key)
   {
-    initscr();
-    const auto set_cbreak_result = cbreak();
-    if (set_cbreak_result == ERR)
-    {
-      std::cout << "Error setting cbreak" << std::endl;
-      terminate = Flag::Raised;
-      return;
-    }
-    const auto set_delay_result = nodelay(stdscr, TRUE);
-    if (set_delay_result == ERR)
-    {
-      std::cout << "Error setting delay" << std::endl;
-      terminate = Flag::Raised;
-      return;
-    }
-    int ch = getch();
-    ch = tolower(static_cast<char>(ch));
-    switch (ch)
-    {
-    case '1':
-      keyboard[0x0] = 1;
-      break;
-    case '2':
-      keyboard[0x1] = 1;
-      break;
-    case '3':
-      keyboard[0x2] = 1;
-      break;
-    case '4':
-      keyboard[0x3] = 1;
-      break;
-    case 'q':
-      keyboard[0x4] = 1;
-      break;
-    case 'w':
-      keyboard[0x5] = 1;
-      break;
-    case 'e':
-      keyboard[0x6] = 1;
-      break;
-    case 'r':
-      keyboard[0x7] = 1;
-      break;
-    case 'a':
-      keyboard[0x8] = 1;
-      break;
-    case 's':
-      keyboard[0x9] = 1;
-      break;
-    case 'd':
-      keyboard[0xA] = 1;
-      break;
-    case 'f':
-      keyboard[0xB] = 1;
-      break;
-    case 'z':
-      keyboard[0xC] = 1;
-      break;
-    case 'x':
-      keyboard[0xD] = 1;
-      break;
-    case 'c':
-      keyboard[0xE] = 1;
-      break;
-    case 'v':
-      keyboard[0xF] = 1;
-      break;
-    }
-    const auto endwin_result = endwin();
-    if (endwin_result == ERR)
-    {
-      std::cout << "Error ending window" << std::endl;
-      terminate = Flag::Raised;
-      return;
-    }
+    keyboard[key] = 1;
   }
 
 } // namespace emulator

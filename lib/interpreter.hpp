@@ -25,8 +25,13 @@ namespace emulator::interpreter
     void emulateCycle();
     Flag shouldDraw();
     Flag shouldTerminate();
-    void setKeys();
+    void setKey(const std::uint8_t key);
     std::optional<std::uint8_t> readGraphicsBuffer(const int x) const;
+
+    // keyboard
+    // only one key down during any given cycle
+    // 0-15 correspond to keys 0-F
+    std::uint8_t keyboard[16]; // 16 keys
 
   private:
     void initialise();
@@ -62,11 +67,6 @@ namespace emulator::interpreter
     // graphics
     // 32x64 (rows x cols) pixel monochrome display - treated like a 2D array of bits
     std::uint8_t graphics_buffer[32 * 64];
-
-    // keyboard
-    // only one key down during any given cycle
-    // 0-15 correspond to keys 0-F
-    std::uint8_t keyboard[16]; // 16 keys
 
     // draw flag
     Flag draw;
