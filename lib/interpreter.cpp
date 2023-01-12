@@ -1,6 +1,6 @@
 #include "interpreter.hpp"
 
-namespace emulator
+namespace emulator::interpreter
 {
   Chip8::Chip8()
   {
@@ -20,7 +20,7 @@ namespace emulator
     }
 
     // clear display and keyboard
-    memset(graphics, 0, sizeof(graphics));
+    memset(graphics_buffer, 0, sizeof(graphics_buffer));
     memset(keyboard, 0, sizeof(keyboard));
 
     delay_timer = 0;
@@ -63,6 +63,15 @@ namespace emulator
     }
   }
 
+  std::optional<std::uint8_t> Chip8::readGraphicsBuffer(const int x) const
+  {
+    if (x < 0 || x > 2047)
+    {
+      return std::nullopt;
+    }
+    return graphics_buffer[x];
+  }
+
   void Chip8::emulateCycle()
   {
     // opcode is 2 bytes long
@@ -82,7 +91,7 @@ namespace emulator
       {
       // CLS - clear the display
       case 0x0000:
-        memset(graphics, 0, sizeof(graphics));
+        memset(graphics_buffer, 0, sizeof(graphics_buffer));
         pc += 2;
         break;
       case 0x000E: // RET - return from subroutine
@@ -204,11 +213,11 @@ namespace emulator
               break;
             }
             // if both bits are 1 then set VF since current bit on screen is erased
-            if (graphics[x_coord + j + ((y_coord + i) * 64)])
+            if (graphics_buffer[x_coord + j + ((y_coord + i) * 64)])
             {
               V[0XF] = 1;
             }
-            graphics[x_coord + j + ((y_coord + i) * 64)] ^= 1;
+            graphics_buffer[x_coord + j + ((y_coord + i) * 64)] ^= 1;
           }
         }
       }

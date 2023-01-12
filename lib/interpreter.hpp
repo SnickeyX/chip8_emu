@@ -1,9 +1,11 @@
-#include <cstdint>
+#pragma once
+
+#include "common.hpp"
+
 #include <cstdio>
+#include <optional>
 #include <cstring>
 #include <fstream>
-#include <memory>
-#include <iostream>
 
 #if __linux__
 #include <curses.h>
@@ -11,17 +13,8 @@
 #pragma message("This program is not supported on your platform!")
 #endif
 
-namespace emulator
+namespace emulator::interpreter
 {
-  static constexpr int SCREEN_WIDTH = 64;
-  static constexpr int SCREEN_HEIGHT = 32;
-
-  enum class Flag
-  {
-    Raised,
-    Lowered
-  };
-
   // an emulator class for chip8
   class Chip8
   {
@@ -33,10 +26,7 @@ namespace emulator
     Flag shouldDraw();
     Flag shouldTerminate();
     void setKeys();
-
-    // graphics
-    // 32x64 (rows x cols) pixel monochrome display - treated like a 2D array of bits
-    std::uint8_t graphics[32 * 64];
+    std::optional<std::uint8_t> readGraphicsBuffer(const int x) const;
 
   private:
     void initialise();
@@ -68,6 +58,10 @@ namespace emulator
 
     // stack
     std::uint16_t stack[12];
+
+    // graphics
+    // 32x64 (rows x cols) pixel monochrome display - treated like a 2D array of bits
+    std::uint8_t graphics_buffer[32 * 64];
 
     // keyboard
     // only one key down during any given cycle

@@ -7,3 +7,8 @@ target_include_directories(${target}
     "${CMAKE_SOURCE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}"
 )
+target_link_libraries(${target}
+    glfw
+    GLEW_220
+    ${OPENGL_LIBRARIES}
+)

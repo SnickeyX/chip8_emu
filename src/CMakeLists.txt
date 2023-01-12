@@ -11,9 +11,6 @@ target_include_directories(${target}
 target_link_libraries(${target}
     chip8_lib
     ${CURSES_LIBRARIES}
-    ${OPENGL_LIBRARIES}
-    glfw
-    GLEW_220
 )
 set_target_properties(chip8_emulator
 PROPERTIES
