@@ -26,10 +26,10 @@ void DrawOnWindow(const emulator::Chip8 &C8)
       }
 
       glBegin(GL_QUADS);
-      glVertex3f((row_num * MODIFIER), (col_num * MODIFIER), 0.0f);
-      glVertex3f((row_num * MODIFIER), (col_num * MODIFIER) + MODIFIER, 0.0f);
-      glVertex3f((row_num * MODIFIER) + MODIFIER, (col_num * MODIFIER) + MODIFIER, 0.0f);
-      glVertex3f((row_num * MODIFIER) + MODIFIER, (col_num * MODIFIER) + 0.0f, 0.0f);
+      glVertex2f((row_num * MODIFIER), (col_num * MODIFIER));
+      glVertex2f((row_num * MODIFIER), (col_num * MODIFIER) + MODIFIER);
+      glVertex2f((row_num * MODIFIER) + MODIFIER, (col_num * MODIFIER) + MODIFIER);
+      glVertex2f((row_num * MODIFIER) + MODIFIER, (col_num * MODIFIER));
       glEnd();
     }
   }
@@ -64,15 +64,6 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  // Initialize GLEW
-  if (glewInit() != GLEW_OK)
-  {
-    std::cout << "Failed to initialize GLEW"
-              << "\n";
-    glfwTerminate();
-    return -1;
-  }
-
   glfwWindowHint(GLFW_SAMPLES, 4);               // 4x antialiasing
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
   glfwWindowHint(GLFW_FLOATING, GL_TRUE);
@@ -87,6 +78,15 @@ int main(int argc, char **argv)
     return -1;
   }
   glfwMakeContextCurrent(window);
+
+  // Initialize GLEW
+  if (glewInit() != GLEW_OK)
+  {
+    std::cout << "Failed to initialize GLEW"
+              << "\n";
+    glfwTerminate();
+    return -1;
+  }
 
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
