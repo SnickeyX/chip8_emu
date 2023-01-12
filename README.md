@@ -6,9 +6,9 @@ Current implementation based on the the original CHIP-8 interpreter created for 
 TODO:  
 - [x] basic outline
 - [x] dealing with the different opcodes (original implementation)
-- [x] ability to take in keyboard input 
+- [ ] ability to take in keyboard input 
 - [x] loading in game
-- [ ] support for drawing on a gui
+- [x] support for drawing on a gui
 - [ ] support for buzzer noise
 - [x] error conditions to check for invalid programs/instructions
 - [x] better build system
