@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     if (work_time.count() < 16.0) // leaving a little time for these calculations to be done
     {
       std::chrono::duration<double, std::milli> delta_ms(16.0 - work_time.count());
-      auto delta_ms_duration = std::chrono::duration_cast<std::chrono::milliseconds>(delta_ms);
+      const auto delta_ms_duration = std::chrono::duration_cast<std::chrono::milliseconds>(delta_ms);
       std::this_thread::sleep_for(std::chrono::milliseconds(delta_ms_duration.count()));
     }
     time_point_finish = std::chrono::system_clock::now();
