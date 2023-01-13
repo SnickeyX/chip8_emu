@@ -1,13 +1,13 @@
-![BUILD-SHIELD](https://img.shields.io/github/actions/workflow/status/snickeyx/chip8_emu/build.yml?style=for-the-badge)
+![BUILD-SHIELD](https://img.shields.io/github/actions/workflow/status/snickeyx/chip8_emu/build.yml?style=flat-square)
 # A CHIP8 Emulator!
 Fun project which aims to make an emulator* (at the moment its an interpreter) for games developed on chip8.  
 Current implementation based on the the original CHIP-8 interpreter created for the RCA COSMAC VIP by Joseph Weisbecker.
 
-## Under development (12/01/2023):
+## Under development (13/01/2023):
 TODO:  
 - [x] basic outline
 - [x] dealing with the different opcodes (original implementation)
-- [ ] ability to take in keyboard input 
+- [x] ability to take in keyboard input 
 - [x] loading in game
 - [x] support for drawing on a gui
 - [ ] support for buzzer noise
