@@ -18,4 +18,5 @@ jobs:
             - name: CMake
               run: cmake -S . -B build -DCMAKE_CXX_COMPILER=$(which clang++)
             - name: Build CHIP8
+              working-directory: ./build
               run: make chip8_emulator -j
