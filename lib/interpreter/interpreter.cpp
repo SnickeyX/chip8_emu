@@ -33,7 +33,7 @@ namespace emulator::interpreter
   }
 
   // add exception handling
-  bool Chip8::loadGame(const char *filename)
+  utils::Result Chip8::loadGame(const char *filename)
   {
     messenger_.printMessage("Loading game ", filename, "...");
     std::ifstream file(filename, std::ios::in | std::ios::binary);
@@ -52,13 +52,13 @@ namespace emulator::interpreter
       delete[] buffer;
       messenger_.printMessage("Game loaded successfully!");
       file.close();
-      return true;
+      return utils::Result::Success;
     }
     else
     {
       messenger_.printMessage("Failed to load game!");
       file.close();
-      return false;
+      return utils::Result::Failure;
     }
   }
 

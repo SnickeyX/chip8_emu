@@ -17,15 +17,52 @@ namespace emulator::interpreter
   public:
     Chip8(utils::Messenger &messenger);
 
-    bool loadGame(const char *filename);
+    /**
+     * @brief Load a game into memory
+     * @param filename The name of the file to load
+     */
+    utils::Result loadGame(const char *filename);
+
+    /**
+     * @brief Emulate a single cycle of the Chip8
+     * @details Fetch, decode and execute an instruction from memory[pc]
+     */
     void emulateCycle();
+
+    /**
+     * @brief Get the draw flag
+     * @return utils::Flag
+     */
     utils::Flag shouldDraw();
+
+    /**
+     * @brief Get the terminate flag
+     * @return utils::Flag
+     */
     utils::Flag shouldTerminate();
+
+    /**
+     * @brief Set the key pressed by the user to the Chip8 keyboard
+     * @param key The key to set
+     */
     void setKey(const std::uint8_t key);
+
+    /**
+     * @brief Read a byte from the graphics buffer
+     * @return the byte at the given index (optional)
+     */
     std::optional<std::uint8_t> readGraphicsBuffer(const int x) const;
 
   private:
+    /**
+     * @brief Set up the Chip8 instance with default values
+     * @details Set up the pc (to 0x200), memory, registers, timers, stack, keyboard and graphics buffer
+     */
     void initialise();
+
+    /**
+     * @brief Decrement the delay and sound timers at 60Hz (set to 60Hz in main.cpp)
+     */
     void updateTimers();
 
   private:
