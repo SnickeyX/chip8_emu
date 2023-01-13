@@ -20,7 +20,7 @@ $ sudo apt upgrade
 $ sudo apt install llvm clang clang-format cmake build-essential libx11-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxrandr-dev libxext-dev libxcursor-dev libxinerama-dev libxi-dev
 ```
 ## Extra features I want to add:  
-- [ ] separate emualtor gui
+- [ ] separate emulator gui
 - [ ] ability to choose different games from a separate emulator gui
 - [ ] support for chip-48 and s-chip
 - [ ] better cross-platform support 
