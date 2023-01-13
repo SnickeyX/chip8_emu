@@ -4,6 +4,7 @@
 #include <chrono>
 #include <thread>
 
+// TODO: document opcodes
 int main(int argc, char **argv)
 {
   emulator::interpreter::Chip8 chip8;

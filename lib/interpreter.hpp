@@ -49,9 +49,6 @@ namespace emulator::interpreter
     // when delay_timer reaches 0, it deactivates
     std::uint8_t delay_timer;
 
-    // clock cycle counter mod 60 (programs should run at 60hz)
-    std::uint8_t num_clock_cycles;
-
     // stack - 16 levels!
     std::uint16_t stack[16];
 

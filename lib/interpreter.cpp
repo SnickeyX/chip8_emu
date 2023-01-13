@@ -26,7 +26,6 @@ namespace emulator::interpreter
 
     delay_timer = 0;
     sound_timer = 0;
-    num_clock_cycles = 0;
 
     terminate = Flag::Lowered;
     draw = Flag::Lowered;
@@ -84,7 +83,8 @@ namespace emulator::interpreter
     const std::uint8_t n = opcode & 0x000F;
     const std::uint8_t kk = opcode & 0x00FF; // also called nn
     const std::uint16_t nnn = opcode & 0x0FFF;
-    printf("curent pc %d\n", pc);
+    // increment program counter
+    pc += 2;
     // handle opcode
     switch (opcode & 0xF000)
     {
@@ -95,13 +95,11 @@ namespace emulator::interpreter
       case 0x00E0:
         memset(graphics_buffer, 0, sizeof(graphics_buffer));
         draw = Flag::Raised;
-        pc += 2;
         break;
       case 0x00EE: // RET - return from subroutine
         pc = stack[--sp];
         break;
       default: // Sys addr - call RCA 1802 program at nnn - we ignore this
-        pc += 2;
         break;
       }
       break;
@@ -115,23 +113,21 @@ namespace emulator::interpreter
       break;
     case 0x3000: // SE Vx,byte
       // skip next instr if Vx == kk
-      pc += (V[x] == kk) ? 4 : 2;
+      pc += (V[x] == kk) ? 2 : 0;
       break;
     case 0x4000: // SNE Vx,byte
       // skip next instr if Vx != kk
-      pc += (V[x] != kk) ? 4 : 2;
+      pc += (V[x] != kk) ? 2 : 0;
       break;
     case 0x5000: // SE Vx,Vy
       // skip next instr if Vx == Vy;
-      pc += (V[x] == V[y]) ? 4 : 2;
+      pc += (V[x] == V[y]) ? 2 : 0;
       break;
     case 0x6000: // LD Vx,byte
       V[x] = kk;
-      pc += 2;
       break;
     case 0x7000: // ADD Vx,byte
       V[x] += kk;
-      pc += 2;
       break;
     case 0x8000:
       switch (opcode & 0x000F)
@@ -174,22 +170,19 @@ namespace emulator::interpreter
         std::cout << "Unknown opcode: " << std::hex << opcode << std::endl;
         terminate = Flag::Raised;
       }
-      pc += 2;
       break;
     case 0x9000: // SNE Vx, Vy
       // skip next instr if Vx != Vy
-      pc += (V[x] != V[y]) ? 4 : 2;
+      pc += (V[x] != V[y]) ? 2 : 0;
       break;
     case 0xA000: // LD I, addr
       I = nnn;
-      pc += 2;
       break;
     case 0xB000:       // JP V0, addr
       pc = nnn + V[0]; // based on original implementation
       break;
     case 0xC000: // RND Vx, byte
       V[x] = floor((rand() % 256) & kk);
-      pc += 2;
       break;
     case 0xD000: // DRW Vx, Vy, nibble
     {            // only starting position are wrapped around screen - based on original implementation
@@ -224,7 +217,6 @@ namespace emulator::interpreter
         }
       }
       draw = Flag::Raised;
-      pc += 2;
       break;
     }
     case 0xE000:
@@ -232,11 +224,11 @@ namespace emulator::interpreter
       {
       case 0X009E: // SKP Vx
         // if key corresponding to V[x] is down, skip next instr
-        pc += (keyboard[V[x]] == 1) ? 4 : 2;
+        pc += (keyboard[V[x]] == 1) ? 2 : 0;
         break;
       case 0X00A1: // SKNP Vx
         // if key corresponding to V[x] is up, skip next instr
-        pc += (keyboard[V[x]] == 0) ? 4 : 2;
+        pc += (keyboard[V[x]] == 0) ? 2 : 0;
         break;
       default:
         std::cout << "Unknown opcode: " << std::hex << opcode << std::endl;
@@ -248,7 +240,6 @@ namespace emulator::interpreter
       {
       case 0X0007: // LD Vx, DT
         V[x] = delay_timer;
-        pc += 2;
         break;
       case 0x000A: // KD Vx, K
         // find if any key pressed, only proceeed in execution if this is the case
@@ -259,25 +250,26 @@ namespace emulator::interpreter
             V[x] = i;
             pc += 2;
           }
+          else
+          {
+            // repeat the same instruction if no key is pressed
+            pc -= 2;
+          }
         }
         break;
       case 0x0015: // LD DT, Vx
         delay_timer = V[x];
-        pc += 2;
         break;
       case 0x0018: // LD ST, Vx
         sound_timer = V[x];
-        pc += 2;
         break;
       case 0x001E: // ADD I, Vx
         I += V[x];
-        pc += 2;
         break;
       case 0x0029: // LD F, Vx
         // setting I to the location of the sprite for digit Vx
         // sprites stored from 0-79 with each sprite taking 5 bytes
         I = V[x] * 5;
-        pc += 2;
         break;
       case 0x0033: // LD B, Vx
       {            // storing the BCD representation of the decimal value at Vx a in memory from [I:I+2]
@@ -287,7 +279,6 @@ namespace emulator::interpreter
           memory[I + i] = deci % 10;
           deci /= 10;
         }
-        pc += 2;
         break;
       }
       case 0x0055: // LD [I], Vx
@@ -297,7 +288,6 @@ namespace emulator::interpreter
           memory[I + i] = V[i];
         }
         // I += x + 1;
-        pc += 2;
         break;
       }
       case 0x0065: // LD Vx, [I]
@@ -307,7 +297,6 @@ namespace emulator::interpreter
           V[i] = memory[I + i];
         }
         // I += x + 1;
-        pc += 2;
         break;
       }
       default:
@@ -327,20 +316,15 @@ namespace emulator::interpreter
 
   void Chip8::updateTimers()
   {
-    if (num_clock_cycles == 60)
+    if (delay_timer > 0)
     {
-      if (delay_timer > 0)
-      {
-        --delay_timer;
-      }
-      if (sound_timer > 0)
-      {
-        std::cout << "BEEP" << std::endl;
-        --sound_timer;
-      }
-      num_clock_cycles = 0;
+      --delay_timer;
     }
-    ++num_clock_cycles;
+    if (sound_timer > 0)
+    {
+      std::cout << "BEEP" << std::endl;
+      --sound_timer;
+    }
   }
 
   Flag Chip8::shouldDraw()

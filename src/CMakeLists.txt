@@ -9,7 +9,6 @@ target_include_directories(${target}
 )
 target_link_libraries(${target}
     chip8_lib
-    ${CURSES_LIBRARIES}
 )
 set_target_properties(chip8_emulator
 PROPERTIES
