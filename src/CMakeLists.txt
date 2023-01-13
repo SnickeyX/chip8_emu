@@ -6,7 +6,6 @@ target_include_directories(${target}
     INTERFACE
     "${CMAKE_SOURCE_DIR}/lib"
     "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CURSES_INCLUDE_DIR}"
 )
 target_link_libraries(${target}
     chip8_lib

@@ -8,12 +8,6 @@
 #include <cmath>
 #include <fstream>
 
-#if __linux__
-#include <curses.h>
-#else
-#pragma message("This program is not supported on your platform!")
-#endif
-
 namespace emulator::interpreter
 {
   // an emulator class for chip8

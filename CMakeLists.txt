@@ -9,7 +9,6 @@ set(CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} -stdlib=libc++")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 project(Chip8Emulator LANGUAGES CXX C) 
-find_package(Curses REQUIRED)
 find_package(OpenGL REQUIRED)
 
 include_directories(

@@ -3,13 +3,19 @@ name: Build
 on: push
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: CMake
-        run: cmake -S . -B build -DCMAKE_CXX_COMPILER=$(which clang++)
-      - name: Build Chip8
-        run: make -j
-        working-directory: build
+    build-linux-x11-clang:
+        name: X11 (Linux, Clang)
+        runs-on: ubuntu-latest
+        env:
+            CC: clang
+            CFLAGS: -Werror
+        steps:
+            - uses: actions/checkout@v2
+            - name: Install dependencies
+              run: |
+                  sudo apt update
+                  sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+            - name: CMake
+              run: cmake -S . -B build -DCMAKE_CXX_COMPILER=$(which clang++)
+            - name: Build CHIP8
+              run: make -j
