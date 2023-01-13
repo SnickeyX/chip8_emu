@@ -12,4 +12,5 @@ build
 games
 .vscode 
 .cache
+BRIX
 chip8_emulator

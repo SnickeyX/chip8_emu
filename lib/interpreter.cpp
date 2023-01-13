@@ -76,7 +76,6 @@ namespace emulator::interpreter
   {
     // opcode is 2 bytes long
     const std::uint16_t opcode = memory[pc] << 8 | memory[pc + 1];
-    std::cout << std::hex << opcode << "\n";
     // all possible relevant fields from instruction
     const std::uint8_t x = (opcode & 0x0F00) >> 8;
     const std::uint8_t y = (opcode & 0x00F0) >> 4;
