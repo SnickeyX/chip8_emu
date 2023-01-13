@@ -28,6 +28,7 @@ $ sudo apt install llvm clang clang-format cmake build-essential libx11-dev libx
 https://chip-8.github.io/extensions/#chip-8
 http://devernay.free.fr/hacks/chip8/C8TECH10.HTM   
 http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf  
+http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#0nnn
 https://en.wikipedia.org/wiki/CHIP-8#CHIP-8_today
 
 Open-Source Libraries Used (in accordance with their license):  
