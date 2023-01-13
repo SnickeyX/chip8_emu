@@ -1,9 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <iostream>
 
-namespace emulator
+namespace emulator::utils
 {
     static constexpr int SCREEN_WIDTH = 64;
     static constexpr int SCREEN_HEIGHT = 32;
@@ -19,4 +18,4 @@ namespace emulator
         Success,
         Failure
     };
-}
+} // namespace emulator::utils

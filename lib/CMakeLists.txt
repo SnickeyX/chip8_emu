@@ -1,14 +1,3 @@
-set(target chip8_lib)
-file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-file(GLOB code "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-add_library(${target} STATIC ${headers} ${code})
-target_include_directories(${target}
-    INTERFACE
-    "${CMAKE_SOURCE_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}"
-)
-target_link_libraries(${target}
-    glfw
-    GLEW_220
-    ${OPENGL_LIBRARIES}
-)
+add_subdirectory(graphics)
+add_subdirectory(interpreter)
+add_subdirectory(utils)

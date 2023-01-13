@@ -1,60 +1,56 @@
 #include "interpreter.hpp"
+#include "messages.hpp"
 #include "graphics.hpp"
 
 #include <chrono>
 #include <thread>
 
 void updateTimePoints(std::chrono::system_clock::time_point &time_point_start, std::chrono::system_clock::time_point &time_point_finish);
-std::string gamePrompt();
-void printUnsuccessfulLoadMessage();
-void printUnsuccessfulGraphicsInitMessage();
-void printUnsuccessfulWindowCreationMessage();
-void printUnsuccessfulDrawMessage();
-void printSuccessfulTerminationMessage();
 
-int main(int argc, char **argv)
+int main()
 {
-  emulator::interpreter::Chip8 chip8;
-  const std::string filename = gamePrompt();
+  emulator::utils::Messenger messenger;
+  const std::string filename = messenger.gamePrompt();
+  emulator::interpreter::Chip8 chip8(messenger);
   bool successfull_load = chip8.loadGame(filename.c_str());
   if (!successfull_load)
   {
-    printUnsuccessfulLoadMessage();
+    messenger.printUnsuccessfulLoadMessage();
     return 1;
   };
-  emulator::graphics::Graphics graphics_handler;
+  emulator::graphics::Graphics graphics_handler(messenger);
   const auto graphics_init_result = graphics_handler.initialise();
-  if (graphics_init_result == emulator::Result::Failure)
+  if (graphics_init_result == emulator::utils::Result::Failure)
   {
-    printUnsuccessfulGraphicsInitMessage();
+    messenger.printUnsuccessfulGraphicsInitMessage();
     return 1;
   }
   const auto window_op = graphics_handler.getWindow();
   if (!window_op)
   {
-    printUnsuccessfulWindowCreationMessage();
+    messenger.printUnsuccessfulWindowCreationMessage();
     return 1;
   }
   graphics_handler.setKeyReactFun(chip8, window_op.value());
   std::chrono::system_clock::time_point time_point_start = std::chrono::system_clock::now();
   std::chrono::system_clock::time_point time_point_finish = std::chrono::system_clock::now();
   // Loop as long as we have not run of out instructions, user has not closed the window or the escape key has not been pressed
-  while (chip8.shouldTerminate() == emulator::Flag::Lowered || graphics_handler.windowDisrupted(window_op.value()))
+  while (chip8.shouldTerminate() == emulator::utils::Flag::Lowered || graphics_handler.windowDisrupted(window_op.value()))
   {
     updateTimePoints(time_point_start, time_point_finish);
     chip8.emulateCycle();
-    if (chip8.shouldDraw() == emulator::Flag::Raised)
+    if (chip8.shouldDraw() == emulator::utils::Flag::Raised)
     {
       // updating window with new graphics
       const auto draw_result = graphics_handler.drawOnWindow(chip8, window_op.value());
-      if (draw_result == emulator::Result::Failure)
+      if (draw_result == emulator::utils::Result::Failure)
       {
-        printUnsuccessfulDrawMessage();
+        messenger.printUnsuccessfulDrawMessage();
         return 1;
       }
     }
   }
-  printSuccessfulTerminationMessage();
+  messenger.printSuccessfulTerminationMessage();
   return 0;
 }
 
@@ -70,49 +66,4 @@ void updateTimePoints(std::chrono::system_clock::time_point &time_point_start, s
     std::this_thread::sleep_for(std::chrono::milliseconds(delta_ms_duration.count()));
   }
   time_point_finish = std::chrono::system_clock::now();
-}
-
-std::string gamePrompt()
-{
-  std::cout << "Welcome to my Chip8 emulator!"
-            << "\n"
-            << "Which game (or file) would you like to use today?"
-            << "\n";
-  std::cout << "Enter the name of the desired file below (ensure file is present in the files folder!)"
-            << "\n";
-  std::string filename;
-  std::cin >> filename;
-  return filename;
-}
-
-void printUnsuccessfulLoadMessage()
-{
-  std::cout << "Error: Exiting program due to unsuccessful file load"
-            << "\n"
-            << "Ensure file name is correct and file is present in the files folder!"
-            << "\n";
-}
-
-void printUnsuccessfulGraphicsInitMessage()
-{
-  std::cout << "Error: Exiting program due to unsuccessful graphics initialisation"
-            << "\n";
-}
-
-void printUnsuccessfulWindowCreationMessage()
-{
-  std::cout << "Error: Exiting program due to unsuccessful window creation"
-            << "\n";
-}
-
-void printUnsuccessfulDrawMessage()
-{
-  std::cout << "Error: Exiting program due to unsuccessful window draw"
-            << "\n";
-}
-
-void printSuccessfulTerminationMessage()
-{
-  std::cout << "Successfully terminated program"
-            << "\n";
 }

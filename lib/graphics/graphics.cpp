@@ -2,25 +2,28 @@
 
 namespace emulator::graphics
 {
+    Graphics::Graphics(utils::Messenger &messenger) : messenger_(messenger)
+    {
+    }
+
     Graphics::~Graphics()
     {
         glfwTerminate();
     }
 
-    Result Graphics::initialise()
+    utils::Result Graphics::initialise()
     {
         // Initialise GLFW
         if (!glfwInit())
         {
-            std::cout << "Failed to initialise GLFW"
-                      << "\n";
-            return Result::Failure;
+            messenger_.printMessage("Failed to initialise GLFW");
+            return utils::Result::Failure;
         }
 
         glfwWindowHint(GLFW_SAMPLES, 4);               // 4x antialiasing
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
         glfwWindowHint(GLFW_FLOATING, GL_TRUE);
-        return Result::Success;
+        return utils::Result::Success;
     }
 
     std::optional<GLFWwindow *> Graphics::getWindow()
@@ -29,8 +32,7 @@ namespace emulator::graphics
         GLFWwindow *window = glfwCreateWindow(MODIFIED_WIDTH, MODIFIED_HEIGHT, "CHIP Display", NULL, NULL);
         if (window == NULL)
         {
-            std::cout << "Failed to open GLFW window. Ensure you have the recommended libraries installed"
-                      << "\n";
+            messenger_.printMessage("Failed to open GLFW window. Ensure you have the recommended libraries installed");
             glfwTerminate();
             return std::nullopt;
         }
@@ -39,8 +41,7 @@ namespace emulator::graphics
         // Initialize GLEW
         if (glewInit() != GLEW_OK)
         {
-            std::cout << "Failed to initialize GLEW"
-                      << "\n";
+            messenger_.printMessage("Failed to initialize GLEW");
             glfwTerminate();
             return std::nullopt;
         }
@@ -56,19 +57,18 @@ namespace emulator::graphics
         return window;
     }
 
-    Result Graphics::drawOnWindow(const interpreter::Chip8 &Chip8, GLFWwindow *window)
+    utils::Result Graphics::drawOnWindow(const interpreter::Chip8 &Chip8, GLFWwindow *window)
     {
         clearWindow();
-        for (int col_num = 0; col_num < emulator::SCREEN_HEIGHT; ++col_num)
+        for (size_t col_num = 0; col_num < utils::SCREEN_HEIGHT; ++col_num)
         {
-            for (int row_num = 0; row_num < emulator::SCREEN_WIDTH; ++row_num)
+            for (size_t row_num = 0; row_num < utils::SCREEN_WIDTH; ++row_num)
             {
-                const auto pixel_op = Chip8.readGraphicsBuffer((col_num * emulator::SCREEN_WIDTH) + row_num);
+                const auto pixel_op = Chip8.readGraphicsBuffer((col_num * utils::SCREEN_WIDTH) + row_num);
                 if (!pixel_op)
                 {
-                    std::cout << "Failed to read graphics buffer"
-                              << "\n";
-                    return Result::Failure;
+                    messenger_.printMessage("Failed to read graphics buffer");
+                    return utils::Result::Failure;
                 }
                 // Setting RGB according to whether pixel is on or off
                 if (*pixel_op == 0)
@@ -88,9 +88,10 @@ namespace emulator::graphics
                 glEnd();
             }
         }
+        // Updating the window
         glfwSwapBuffers(window);
         glfwPollEvents();
-        return Result::Success;
+        return utils::Result::Success;
     }
 
     bool Graphics::windowDisrupted(GLFWwindow *window)
@@ -104,7 +105,9 @@ namespace emulator::graphics
 
     void Graphics::setKeyReactFun(interpreter::Chip8 &Chip8, GLFWwindow *window)
     {
+        // Setting the user pointer to the Chip8 object so that the key callback can access it
         glfwSetWindowUserPointer(window, &Chip8);
+        // GLFWKeyFun is a function pointer that can be used to set the key callback (I've used a lambda for this)
         glfwSetKeyCallback(
             window,
             [](GLFWwindow *window, int key, int scancode, int action, int mods)

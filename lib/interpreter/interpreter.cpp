@@ -2,7 +2,8 @@
 
 namespace emulator::interpreter
 {
-  Chip8::Chip8()
+  Chip8::Chip8(utils::Messenger &messenger)
+      : messenger_(messenger)
   {
     initialise();
   }
@@ -27,14 +28,14 @@ namespace emulator::interpreter
     delay_timer = 0;
     sound_timer = 0;
 
-    terminate = Flag::Lowered;
-    draw = Flag::Lowered;
+    terminate = utils::Flag::Lowered;
+    draw = utils::Flag::Lowered;
   }
 
   // add exception handling
   bool Chip8::loadGame(const char *filename)
   {
-    std::cout << filename << "\n";
+    messenger_.printMessage("Loading game ", filename, "...");
     std::ifstream file(filename, std::ios::in | std::ios::binary);
     if (file.is_open())
     {
@@ -49,15 +50,13 @@ namespace emulator::interpreter
         memory[i + 512] = static_cast<std::uint8_t>(buffer[i]);
       }
       delete[] buffer;
-      std::cout << "Game loaded successfully!"
-                << "\n";
+      messenger_.printMessage("Game loaded successfully!");
       file.close();
       return true;
     }
     else
     {
-      std::cout << "Error: Could not open file"
-                << "\n";
+      messenger_.printMessage("Failed to load game!");
       file.close();
       return false;
     }
@@ -93,7 +92,7 @@ namespace emulator::interpreter
       // CLS - clear the display
       case 0x00E0:
         memset(graphics_buffer, 0, sizeof(graphics_buffer));
-        draw = Flag::Raised;
+        draw = utils::Flag::Raised;
         break;
       case 0x00EE: // RET - return from subroutine
         pc = stack[--sp];
@@ -166,8 +165,8 @@ namespace emulator::interpreter
         V[x] <<= 1;           // multiply by 2
         break;
       default:
-        std::cout << "Unknown opcode: " << std::hex << opcode << std::endl;
-        terminate = Flag::Raised;
+        messenger_.printMessage("Unknown opcode: ", opcode, " exiting emulator...");
+        terminate = utils::Flag::Raised;
       }
       break;
     case 0x9000: // SNE Vx, Vy
@@ -215,7 +214,7 @@ namespace emulator::interpreter
           }
         }
       }
-      draw = Flag::Raised;
+      draw = utils::Flag::Raised;
       break;
     }
     case 0xE000:
@@ -230,8 +229,8 @@ namespace emulator::interpreter
         pc += (keyboard[V[x]] == 0) ? 2 : 0;
         break;
       default:
-        std::cout << "Unknown opcode: " << std::hex << opcode << std::endl;
-        terminate = Flag::Raised;
+        messenger_.printMessage("Unknown opcode: ", opcode, " exiting emulator...");
+        terminate = utils::Flag::Raised;
       }
       break;
     case 0xF000:
@@ -299,13 +298,13 @@ namespace emulator::interpreter
         break;
       }
       default:
-        std::cout << "Unknown opcode: " << std::hex << opcode << std::endl;
-        terminate = Flag::Raised;
+        messenger_.printMessage("Unknown opcode: ", opcode, " exiting emulator...");
+        terminate = utils::Flag::Raised;
       }
       break;
     default:
-      std::cout << "Unknown opcode: " << std::hex << opcode << std::endl;
-      terminate = Flag::Raised;
+      messenger_.printMessage("Unknown opcode: ", opcode, " exiting emulator...");
+      terminate = utils::Flag::Raised;
       break;
     }
     updateTimers();
@@ -319,23 +318,23 @@ namespace emulator::interpreter
     }
     if (sound_timer > 0)
     {
-      std::cout << "BEEP" << std::endl;
+      messenger_.printMessage("BEEP!"); // TODO: add sound
       --sound_timer;
     }
   }
 
-  Flag Chip8::shouldDraw()
+  utils::Flag Chip8::shouldDraw()
   {
-    if (draw == Flag::Raised)
+    if (draw == utils::Flag::Raised)
     {
       // reset draw flag
-      draw = Flag::Lowered;
-      return Flag::Raised;
+      draw = utils::Flag::Lowered;
+      return utils::Flag::Raised;
     }
-    return Flag::Lowered;
+    return utils::Flag::Lowered;
   }
 
-  Flag Chip8::shouldTerminate()
+  utils::Flag Chip8::shouldTerminate()
   {
     return terminate;
   }

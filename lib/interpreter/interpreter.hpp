@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.hpp"
+#include "messages.hpp"
 
 #include <cstdio>
 #include <optional>
@@ -14,12 +15,12 @@ namespace emulator::interpreter
   class Chip8
   {
   public:
-    Chip8();
+    Chip8(utils::Messenger &messenger);
 
     bool loadGame(const char *filename);
     void emulateCycle();
-    Flag shouldDraw();
-    Flag shouldTerminate();
+    utils::Flag shouldDraw();
+    utils::Flag shouldTerminate();
     void setKey(const std::uint8_t key);
     std::optional<std::uint8_t> readGraphicsBuffer(const int x) const;
 
@@ -28,6 +29,7 @@ namespace emulator::interpreter
     void updateTimers();
 
   private:
+    utils::Messenger &messenger_;
     // memory model for chip8
     std::uint8_t memory[4096];
 
@@ -62,10 +64,10 @@ namespace emulator::interpreter
     std::uint8_t graphics_buffer[32 * 64];
 
     // draw flag
-    Flag draw;
+    utils::Flag draw;
 
     // terminate flag
-    Flag terminate;
+    utils::Flag terminate;
 
     // To be put anywhere in the first 512 bytes of memory, where the original interpreter was located
     // I'll go with the first 80 bytes from the bottom
