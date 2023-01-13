@@ -5,7 +5,7 @@ Current implementation based on the the original CHIP-8 interpreter created for 
 
 ## How to use
 Pre-Conditions: You <b>MUST</b> have packages inlcluding llvm, clang, cmake (can get these with build-essential not inlcuding llvm). For GUI purposes, you must also have libx11-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxrandr-dev libxext-dev libxcursor-dev libxinerama-dev libxi-dev. 
-1. Put desired chip8 file to run into the `files` folder.
+1. Put desired chip8 file to run into the `files` folder. (if you don't have any roms, check [this](https://www.zophar.net/pdroms/chip8/chip-8-games-pack.html) out)
 2. Create the emulator binary using `make -C build` (use from main directory and not any sub-directory) 
 3. Go into the files folder and run the emulator using `./chip8_emulator`
 4. Enjoy ٩(˘◡˘)۶
@@ -20,9 +20,10 @@ $ sudo apt upgrade
 $ sudo apt install llvm clang clang-format cmake build-essential libx11-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxrandr-dev libxext-dev libxcursor-dev libxinerama-dev libxi-dev
 ```
 ## Extra features I want to add:  
+- [ ] separate emualtor gui
 - [ ] ability to choose different games from a separate emulator gui
 - [ ] support for chip-48 and s-chip
-- [ ] cross-platform support (linux only first)
+- [ ] better cross-platform support 
 
 ## Resources used:  
 https://chip-8.github.io/extensions/#chip-8
