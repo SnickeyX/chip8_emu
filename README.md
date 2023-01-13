@@ -10,7 +10,7 @@ TODO:
 - [x] ability to take in keyboard input 
 - [x] loading in game
 - [x] support for drawing on a gui
-- [ ] support for buzzer noise
+- [ ] ~~support for buzzer noise~~ (will be horrible, so maybe adding NCS?)
 - [x] error conditions to check for invalid programs/instructions
 - [x] better build system
 - [ ] ability to choose different games + separate emulator gui
