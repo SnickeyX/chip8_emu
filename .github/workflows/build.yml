@@ -14,8 +14,8 @@ jobs:
             - name: Install dependencies
               run: |
                   sudo apt update
-                  sudo apt install libegl1-mesa-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+                  sudo apt install llibx11-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxrandr-dev libxext-dev libxcursor-dev libxinerama-dev libxi-dev
             - name: CMake
               run: cmake -S . -B build -DCMAKE_CXX_COMPILER=$(which clang++)
             - name: Build CHIP8
-              run: make -j
+              run: make chip8_emulator -j
