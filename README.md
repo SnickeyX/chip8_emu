@@ -3,6 +3,20 @@
 Fun project which aims to make an emulator* (at the moment its an interpreter) for games developed on chip8.  
 Current implementation based on the the original CHIP-8 interpreter created for the RCA COSMAC VIP by Joseph Weisbecker.
 
+<p align = "center">
+<img src= "https://user-images.githubusercontent.com/58626285/212418850-5c73943f-a1a7-4fa4-a1d9-0197c31dd0f9.png">     
+<br>
+<b> BRIX </b>  
+<br>
+<br>
+<img src= "https://user-images.githubusercontent.com/58626285/212418371-c14a2ad6-40b0-4c40-a117-05b2f686136a.png">
+<br>
+<b> PONG </b>
+</p>
+
+
+
+
 ## How to use
 Pre-Conditions: You <b>MUST</b> have packages inlcluding llvm, clang, cmake (can get these with build-essential not inlcuding llvm). For GUI purposes, you must also have libx11-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxrandr-dev libxext-dev libxcursor-dev libxinerama-dev libxi-dev. 
 1. Put desired chip8 file to run into the `files` folder. (if you don't have any roms, check [this](https://www.zophar.net/pdroms/chip8/chip-8-games-pack.html) out)
