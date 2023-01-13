@@ -309,8 +309,6 @@ namespace emulator::interpreter
       terminate = Flag::Raised;
       break;
     }
-    // clear keyboard after each cycle
-    memset(keyboard, 0, sizeof(keyboard));
     updateTimers();
   }
 
@@ -345,6 +343,8 @@ namespace emulator::interpreter
 
   void Chip8::setKey(const std::uint8_t key)
   {
+    // clear keyboard after each cycle
+    memset(keyboard, 0, sizeof(keyboard));
     keyboard[key] = 1;
   }
 
