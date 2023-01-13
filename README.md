@@ -1,3 +1,4 @@
+![BUILD-SHIELD](https://img.shields.io/github/actions/workflow/status/snickeyx/chip8_emu/build.yml?style=for-the-badge)
 # A CHIP8 Emulator!
 Fun project which aims to make an emulator* (at the moment its an interpreter) for games developed on chip8.  
 Current implementation based on the the original CHIP-8 interpreter created for the RCA COSMAC VIP by Joseph Weisbecker.
